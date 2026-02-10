@@ -6,7 +6,7 @@ const sections = [
   { title: "3. Data Security", content: "We implement appropriate security measures to protect your personal information. All payment processing is handled through secure, encrypted channels via our payment partners." },
   { title: "4. Cookies", content: "We use cookies to improve your browsing experience and analyze website traffic. You can control cookie settings through your browser preferences." },
   { title: "5. Your Rights", content: "You have the right to access, correct, or delete your personal data. Contact us at privacy@hopefoundation.org to exercise these rights." },
-  { title: "6. Contact", content: "For questions about this privacy policy, please contact us at privacy@hopefoundation.org or write to us at 123 Hope Street, Nairobi, Kenya." },
+  { title: "6. Contact", content: "For questions about this privacy policy, please contact us at info@alimranmuslimaid.org or write to us at Plot 9 Namakwekwe, Mbale, Uganda." },
 ];
 
 const PrivacyPolicy = () => {
