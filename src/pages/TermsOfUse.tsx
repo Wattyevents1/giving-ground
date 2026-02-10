@@ -3,7 +3,7 @@ import Layout from "@/components/layout/Layout";
 const sections = [
   { title: "1. Acceptance of Terms", content: "By accessing and using the Hope Foundation website, you agree to be bound by these Terms of Use. If you do not agree, please do not use our website." },
   { title: "2. Donations", content: "All donations are voluntary and non-refundable unless required by law. Donation receipts are provided for tax purposes. We reserve the right to allocate donations to the areas of greatest need." },
-  { title: "3. Intellectual Property", content: "All content on this website, including text, images, logos, and designs, is the property of Hope Foundation and is protected by copyright laws." },
+  { title: "3. Intellectual Property", content: "All content on this website, including text, images, logos, and designs, is the property of Al-Imran Muslim Aid and is protected by copyright laws." },
   { title: "4. User Conduct", content: "You agree not to use this website for any unlawful purpose or in any way that could damage, disable, or impair the website's functionality." },
   { title: "5. Limitation of Liability", content: "Hope Foundation shall not be liable for any indirect, incidental, or consequential damages arising from your use of this website." },
   { title: "6. Changes to Terms", content: "We reserve the right to update these terms at any time. Continued use of the website after changes constitutes acceptance of the new terms." },
