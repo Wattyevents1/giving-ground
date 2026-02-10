@@ -21,11 +21,9 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <nav className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-            <Heart className="w-5 h-5 text-primary-foreground fill-current" />
-          </div>
+          <img src={logo} alt="Al-Imran Muslim Aid" className="w-10 h-10 rounded-full object-cover" />
           <span className="font-serif text-xl md:text-2xl font-bold text-foreground">
-            Hope<span className="text-accent">Foundation</span>
+            Al-Imran<span className="text-accent"> Muslim Aid</span>
           </span>
         </Link>
 

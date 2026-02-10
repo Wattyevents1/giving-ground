@@ -13,7 +13,7 @@ const Footer = () => {
               <span className="font-serif text-xl font-bold">Al-Imran Muslim Aid</span>
             </Link>
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
-              Making a difference together. We empower communities through sustainable development, education, and compassionate action.
+              Making a difference together. We empower communities through sustainable development, education, and compassionate action for the Ummah.
             </p>
             <div className="flex gap-3">
               {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (

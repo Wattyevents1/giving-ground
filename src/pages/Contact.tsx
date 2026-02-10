@@ -7,9 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 
 const contactInfo = [
-  { icon: MapPin, label: "Address", value: "123 Hope Street, Nairobi, Kenya" },
-  { icon: Phone, label: "Phone", value: "+254 700 123 456" },
-  { icon: Mail, label: "Email", value: "info@hopefoundation.org" },
+  { icon: MapPin, label: "Address", value: "Plot 9 Namakwekwe, Mbale, Uganda" },
+  { icon: Phone, label: "Phone", value: "+256 701 703 951" },
+  { icon: Mail, label: "Email", value: "info@alimranmuslimaid.org" },
   { icon: Clock, label: "Hours", value: "Mon - Fri: 8:00 AM - 5:00 PM" },
 ];
 
