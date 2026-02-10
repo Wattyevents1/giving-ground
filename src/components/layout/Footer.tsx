@@ -85,7 +85,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-primary-foreground/60">
-            © {new Date().getFullYear()} Hope Foundation. All rights reserved.
+            © {new Date().getFullYear()} Al-Imran Muslim Aid. All rights reserved.
           </p>
           <p className="text-sm text-primary-foreground/60">
             Made with <Heart className="w-3 h-3 inline fill-current text-charity-orange" /> for a better world
