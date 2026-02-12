@@ -14,16 +14,391 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blog_posts: {
+        Row: {
+          author: string | null
+          category: string | null
+          content: string | null
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          published_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      careers: {
+        Row: {
+          created_at: string
+          description: string | null
+          employment_type: string | null
+          id: string
+          location: string | null
+          requirements: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          employment_type?: string | null
+          id?: string
+          location?: string | null
+          requirements?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          employment_type?: string | null
+          id?: string
+          location?: string | null
+          requirements?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean | null
+          message: string
+          name: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          name: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          name?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_email: string | null
+          donor_name: string | null
+          id: string
+          is_recurring: boolean | null
+          payment_method: string | null
+          project_id: string | null
+          status: string | null
+          transaction_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: string | null
+          transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: string | null
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_donations: {
+        Row: {
+          category: string | null
+          created_at: string
+          donor_email: string
+          donor_name: string
+          donor_phone: string | null
+          id: string
+          item_description: string
+          pickup_location: string | null
+          status: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          donor_email: string
+          donor_name: string
+          donor_phone?: string | null
+          id?: string
+          item_description: string
+          pickup_location?: string | null
+          status?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          donor_email?: string
+          donor_name?: string
+          donor_phone?: string | null
+          id?: string
+          item_description?: string
+          pickup_location?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      memberships: {
+        Row: {
+          created_at: string
+          donor_email: string
+          donor_name: string | null
+          id: string
+          status: string
+          stripe_subscription_id: string | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          donor_email: string
+          donor_name?: string | null
+          id?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          donor_email?: string
+          donor_name?: string | null
+          id?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          amount_raised: number | null
+          category: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          donors_count: number | null
+          funding_goal: number | null
+          gallery_urls: Json | null
+          id: string
+          image_url: string | null
+          location: string | null
+          long_description: string | null
+          start_date: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount_raised?: number | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          donors_count?: number | null
+          funding_goal?: number | null
+          gallery_urls?: Json | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          long_description?: string | null
+          start_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount_raised?: number | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          donors_count?: number | null
+          funding_goal?: number | null
+          gallery_urls?: Json | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          long_description?: string | null
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      volunteers: {
+        Row: {
+          area_of_interest: string | null
+          availability: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          skills: string | null
+          status: string
+        }
+        Insert: {
+          area_of_interest?: string | null
+          availability?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          skills?: string | null
+          status?: string
+        }
+        Update: {
+          area_of_interest?: string | null
+          availability?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          skills?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      is_admin_or_manager: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "content_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +525,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "content_manager"],
+    },
   },
 } as const
