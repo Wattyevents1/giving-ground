@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,15 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to admin dashboard when user is authenticated and is admin
+  useEffect(() => {
+    if (!isLoading && user && isAdmin) {
+      navigate("/admin", { replace: true });
+    }
+  }, [user, isAdmin, isLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +52,8 @@ const AdminLogin = () => {
       const { error } = await signIn(email, password);
       if (error) {
         setError(error);
-        setLoading(false);
-      } else {
-        navigate("/admin");
       }
+      setLoading(false);
     }
   };
 
