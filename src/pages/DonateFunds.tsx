@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { Heart, CreditCard, Smartphone, Globe } from "lucide-react";
+import { Heart, CreditCard, Smartphone, Globe, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const presetAmounts = [10, 25, 50, 100, 250, 500];
 
@@ -13,9 +15,64 @@ const DonateFunds = () => {
   const [amount, setAmount] = useState<number | "">("");
   const [donationType, setDonationType] = useState<"one-time" | "monthly">("one-time");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorPhone, setDonorPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("pesapal");
 
   const handlePresetClick = (preset: number) => { setSelectedPreset(preset); setAmount(preset); };
   const handleCustomAmount = (value: string) => { setSelectedPreset(null); setAmount(value ? parseInt(value) : ""); };
+
+  const handlePesapalPayment = async () => {
+    if (!amount || !donorEmail) {
+      toast.error("Please enter an amount and email address.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("pesapal-payment", {
+        body: {
+          amount,
+          donor_name: donorName,
+          donor_email: donorEmail,
+          donor_phone: donorPhone,
+          description: `${donationType === "monthly" ? "Monthly" : "One-time"} Donation`,
+          is_recurring: donationType === "monthly",
+          callback_url: window.location.origin + "/donate?status=complete",
+        },
+      });
+      if (error) throw error;
+      if (data?.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        throw new Error("No redirect URL received");
+      }
+    } catch (err: any) {
+      console.error("Payment error:", err);
+      toast.error(err.message || "Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePayPalPayment = () => {
+    if (!amount) {
+      toast.error("Please enter a donation amount.");
+      return;
+    }
+    // PayPal.me or PayPal donation link — replace with your actual PayPal link
+    const paypalUrl = `https://www.paypal.com/donate?amount=${amount}&currency_code=USD`;
+    window.open(paypalUrl, "_blank");
+  };
+
+  const handleDonate = () => {
+    if (activeTab === "pesapal") {
+      handlePesapalPayment();
+    } else {
+      handlePayPalPayment();
+    }
+  };
 
   return (
     <Layout>
@@ -61,34 +118,39 @@ const DonateFunds = () => {
                 <div className="space-y-4 mb-8">
                   <h3 className="font-serif text-lg font-semibold">Your Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="donor-name">Full Name</Label><Input id="donor-name" placeholder="John Doe" className="mt-1" /></div>
-                    <div><Label htmlFor="donor-email">Email</Label><Input id="donor-email" type="email" placeholder="john@example.com" className="mt-1" /></div>
+                    <div><Label htmlFor="donor-name">Full Name</Label><Input id="donor-name" placeholder="John Doe" className="mt-1" value={donorName} onChange={(e) => setDonorName(e.target.value)} /></div>
+                    <div><Label htmlFor="donor-email">Email</Label><Input id="donor-email" type="email" placeholder="john@example.com" className="mt-1" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} /></div>
+                  </div>
+                  <div>
+                    <Label htmlFor="donor-phone">Phone (for mobile money)</Label>
+                    <Input id="donor-phone" type="tel" placeholder="+256700000000" className="mt-1" value={donorPhone} onChange={(e) => setDonorPhone(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="mb-8">
                   <h3 className="font-serif text-lg font-semibold mb-4">Payment Method</h3>
-                  <Tabs defaultValue="card" className="w-full">
-                    <TabsList className="w-full grid grid-cols-3">
-                      <TabsTrigger value="card" className="gap-2"><CreditCard className="w-4 h-4" /> Card</TabsTrigger>
-                      <TabsTrigger value="mobile" className="gap-2"><Smartphone className="w-4 h-4" /> Mobile</TabsTrigger>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="w-full grid grid-cols-2">
+                      <TabsTrigger value="pesapal" className="gap-2"><CreditCard className="w-4 h-4" /> Card / Mobile Money</TabsTrigger>
                       <TabsTrigger value="paypal" className="gap-2"><Globe className="w-4 h-4" /> PayPal</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="card" className="mt-4 text-center text-muted-foreground py-8">
-                      <CreditCard className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" /><p>Stripe payment integration will be configured here.</p>
+                    <TabsContent value="pesapal" className="mt-4 text-center text-muted-foreground py-6">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <CreditCard className="w-8 h-8 text-primary/60" />
+                        <Smartphone className="w-8 h-8 text-primary/60" />
+                      </div>
+                      <p className="text-sm">Pay securely with Visa, Mastercard, MTN Mobile Money, or Airtel Money via Pesapal.</p>
                     </TabsContent>
-                    <TabsContent value="mobile" className="mt-4 text-center text-muted-foreground py-8">
-                      <Smartphone className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" /><p>Pesapal mobile money integration will be configured here.</p>
-                    </TabsContent>
-                    <TabsContent value="paypal" className="mt-4 text-center text-muted-foreground py-8">
-                      <Globe className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" /><p>PayPal integration will be configured here.</p>
+                    <TabsContent value="paypal" className="mt-4 text-center text-muted-foreground py-6">
+                      <Globe className="w-8 h-8 mx-auto mb-2 text-primary/60" />
+                      <p className="text-sm">You'll be redirected to PayPal to complete your donation securely.</p>
                     </TabsContent>
                   </Tabs>
                 </div>
 
-                <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-6 text-lg rounded-xl" disabled={!amount}>
-                  <Heart className="w-5 h-5 mr-2 fill-current" />
-                  Donate {amount ? `$${amount}` : ""} {donationType === "monthly" ? "Monthly" : ""}
+                <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-6 text-lg rounded-xl" disabled={!amount || loading} onClick={handleDonate}>
+                  {loading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Heart className="w-5 h-5 mr-2 fill-current" />}
+                  {loading ? "Processing..." : `Donate ${amount ? `$${amount}` : ""} ${donationType === "monthly" ? "Monthly" : ""}`}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-4">Your donation is secure and encrypted. You'll receive a receipt via email.</p>
               </CardContent>

@@ -1,7 +1,13 @@
+import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { Heart, Star, Crown, Check } from "lucide-react";
+import { Heart, Star, Crown, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const tiers = [
   { name: "Supporter", price: 10, icon: Heart, description: "Show your support with a monthly contribution.", features: ["Monthly newsletter", "Name on supporters wall", "Tax-deductible receipt", "Project updates via email"], popular: false },
@@ -10,6 +16,53 @@ const tiers = [
 ];
 
 const Membership = () => {
+  const [selectedTier, setSelectedTier] = useState<typeof tiers[0] | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleJoin = async () => {
+    if (!selectedTier || !email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("pesapal-payment", {
+        body: {
+          amount: selectedTier.price,
+          donor_name: name,
+          donor_email: email,
+          donor_phone: phone,
+          description: `${selectedTier.name} Membership - Monthly`,
+          is_recurring: true,
+          callback_url: window.location.origin + "/membership?status=complete",
+        },
+      });
+      if (error) throw error;
+
+      // Save membership record
+      await supabase.from("memberships").insert({
+        donor_email: email,
+        donor_name: name || null,
+        tier: selectedTier.name.toLowerCase(),
+        status: "pending",
+      });
+
+      if (data?.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        throw new Error("No redirect URL received");
+      }
+    } catch (err: any) {
+      console.error("Membership payment error:", err);
+      toast.error(err.message || "Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <section className="bg-gradient-hero text-primary-foreground py-20 md:py-28">
@@ -39,7 +92,7 @@ const Membership = () => {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className={`w-full font-semibold ${tier.popular ? "bg-accent hover:bg-accent/90 text-accent-foreground" : ""}`} variant={tier.popular ? "default" : "outline"}>
+                  <Button className={`w-full font-semibold ${tier.popular ? "bg-accent hover:bg-accent/90 text-accent-foreground" : ""}`} variant={tier.popular ? "default" : "outline"} onClick={() => setSelectedTier(tier)}>
                     Join as {tier.name}
                   </Button>
                 </CardFooter>
@@ -48,6 +101,25 @@ const Membership = () => {
           </div>
         </div>
       </section>
+
+      <Dialog open={!!selectedTier} onOpenChange={(open) => !open && setSelectedTier(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif">Join as {selectedTier?.name}</DialogTitle>
+            <DialogDescription>Enter your details to start your ${selectedTier?.price}/month membership.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div><Label htmlFor="member-name">Full Name</Label><Input id="member-name" placeholder="John Doe" className="mt-1" value={name} onChange={(e) => setName(e.target.value)} /></div>
+            <div><Label htmlFor="member-email">Email *</Label><Input id="member-email" type="email" placeholder="john@example.com" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+            <div><Label htmlFor="member-phone">Phone (for mobile money)</Label><Input id="member-phone" type="tel" placeholder="+256700000000" className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold" disabled={!email || loading} onClick={handleJoin}>
+              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Heart className="w-4 h-4 mr-2 fill-current" />}
+              {loading ? "Processing..." : `Pay $${selectedTier?.price}/month via Pesapal`}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">Secure payment via Pesapal (Card or Mobile Money)</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
