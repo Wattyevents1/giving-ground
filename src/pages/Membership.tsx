@@ -37,7 +37,7 @@ const Membership = () => {
           donor_phone: phone,
           description: `${selectedTier.name} Membership - Monthly`,
           is_recurring: true,
-          callback_url: window.location.origin + "/membership?status=complete",
+          callback_url: window.location.origin + "/?donation=success",
         },
       });
       if (error) throw error;

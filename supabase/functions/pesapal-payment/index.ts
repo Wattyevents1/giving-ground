@@ -12,6 +12,17 @@ const PESAPAL_SUBMIT_ORDER_URL = "https://cybqa.pesapal.com/pesapalv3/api/Transa
 const PESAPAL_IPN_URL = "https://cybqa.pesapal.com/pesapalv3/api/URLSetup/RegisterIPN";
 const PESAPAL_TX_STATUS_URL = "https://cybqa.pesapal.com/pesapalv3/api/Transactions/GetTransactionStatus";
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 15000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function getAccessToken(): Promise<string> {
   const consumerKey = Deno.env.get("PESAPAL_CONSUMER_KEY");
   const consumerSecret = Deno.env.get("PESAPAL_CONSUMER_SECRET");
@@ -20,7 +31,7 @@ async function getAccessToken(): Promise<string> {
     throw new Error("Pesapal credentials not configured");
   }
 
-  const res = await fetch(PESAPAL_AUTH_URL, {
+  const res = await fetchWithTimeout(PESAPAL_AUTH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
@@ -36,8 +47,8 @@ async function getAccessToken(): Promise<string> {
   return data.token;
 }
 
-async function registerIPN(token: string, callbackUrl: string): Promise<string> {
-  const res = await fetch(PESAPAL_IPN_URL, {
+async function registerIPN(token: string, ipnUrl: string): Promise<string> {
+  const res = await fetchWithTimeout(PESAPAL_IPN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +56,7 @@ async function registerIPN(token: string, callbackUrl: string): Promise<string> 
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      url: callbackUrl,
+      url: ipnUrl,
       ipn_notification_type: "GET",
     }),
   });
@@ -75,7 +86,7 @@ serve(async (req) => {
       // Check transaction status
       if (orderTrackingId) {
         const token = await getAccessToken();
-        const statusRes = await fetch(
+        const statusRes = await fetchWithTimeout(
           `${PESAPAL_TX_STATUS_URL}?orderTrackingId=${orderTrackingId}`,
           {
             headers: {
@@ -130,7 +141,7 @@ serve(async (req) => {
         currency: "USD",
         amount: Number(amount),
         description: description || "Donation",
-        callback_url: callback_url || `${supabaseUrl}/functions/v1/pesapal-payment?action=ipn`,
+        callback_url: callback_url || `${new URL(req.headers.get("origin") || req.url).origin}/`,
         notification_id: ipnId,
         billing_address: {
           email_address: donor_email,
@@ -140,7 +151,7 @@ serve(async (req) => {
         },
       };
 
-      const orderRes = await fetch(PESAPAL_SUBMIT_ORDER_URL, {
+      const orderRes = await fetchWithTimeout(PESAPAL_SUBMIT_ORDER_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
