@@ -39,7 +39,7 @@ const DonateFunds = () => {
           donor_phone: donorPhone,
           description: `${donationType === "monthly" ? "Monthly" : "One-time"} Donation`,
           is_recurring: donationType === "monthly",
-          callback_url: window.location.origin + "/donate?status=complete",
+          callback_url: window.location.origin + "/?donation=success",
         },
       });
       if (error) throw error;
