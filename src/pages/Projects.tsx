@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { MapPin, Search } from "lucide-react";
@@ -6,24 +6,34 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-const allProjects = [
-  { id: 1, title: "Clean Water for Rural Communities", description: "Providing clean, safe drinking water to 5,000 families in rural Kenya.", image: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&h=400&fit=crop", location: "Turkana, Kenya", goal: 50000, raised: 38500, category: "Water & Sanitation", status: "active" },
-  { id: 2, title: "Education for Every Child", description: "Building schools and providing educational materials to underprivileged children.", image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop", location: "Bihar, India", goal: 75000, raised: 52000, category: "Education", status: "active" },
-  { id: 3, title: "Food Security Program", description: "Establishing community gardens and food distribution networks to combat hunger.", image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop", location: "Lagos, Nigeria", goal: 30000, raised: 21000, category: "Food & Nutrition", status: "active" },
-  { id: 4, title: "Mobile Health Clinics", description: "Bringing healthcare to remote areas through mobile medical units.", image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop", location: "Mombasa, Kenya", goal: 60000, raised: 45000, category: "Healthcare", status: "active" },
-  { id: 5, title: "Women's Empowerment Initiative", description: "Providing skills training, microloans, and mentorship to women entrepreneurs.", image: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600&h=400&fit=crop", location: "Kampala, Uganda", goal: 40000, raised: 28000, category: "Empowerment", status: "active" },
-  { id: 6, title: "Solar Energy for Schools", description: "Installing solar panels in rural schools to ensure consistent electricity.", image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop", location: "Dar es Salaam, Tanzania", goal: 55000, raised: 55000, category: "Environment", status: "completed" },
-];
-
-const categories = ["All", "Water & Sanitation", "Education", "Food & Nutrition", "Healthcare", "Empowerment", "Environment"];
+type Project = Tables<"projects">;
 
 const Projects = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const filtered = allProjects.filter((p) => {
-    const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data } = await supabase
+        .from("projects")
+        .select("*")
+        .in("status", ["published", "completed"])
+        .order("created_at", { ascending: false });
+      setProjects(data || []);
+    };
+    fetchProjects();
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category).filter(Boolean)))];
+
+  const filtered = projects.filter((p) => {
+    const matchesSearch =
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      (p.description || "").toLowerCase().includes(search.toLowerCase());
     const matchesCategory = activeCategory === "All" || p.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -48,7 +58,7 @@ const Projects = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
-                <Button key={cat} variant={activeCategory === cat ? "default" : "outline"} size="sm" onClick={() => setActiveCategory(cat)} className="text-xs">
+                <Button key={cat} variant={activeCategory === cat ? "default" : "outline"} size="sm" onClick={() => setActiveCategory(cat!)} className="text-xs">
                   {cat}
                 </Button>
               ))}
@@ -57,11 +67,13 @@ const Projects = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {filtered.map((project) => {
-              const percentage = Math.round((project.raised / project.goal) * 100);
+              const goal = project.funding_goal || 1;
+              const raised = project.amount_raised || 0;
+              const percentage = Math.min(Math.round((raised / goal) * 100), 100);
               return (
                 <Card key={project.id} className="overflow-hidden group hover:shadow-elevated transition-all duration-300 border-border/50">
                   <div className="relative overflow-hidden aspect-[3/2]">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    <img src={project.image_url || "/placeholder.svg"} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                     <div className="absolute top-3 left-3 flex gap-2">
                       <span className="px-3 py-1 bg-primary/90 text-primary-foreground text-xs font-medium rounded-full backdrop-blur-sm">{project.category}</span>
                       {project.status === "completed" && <span className="px-3 py-1 bg-charity-gold/90 text-foreground text-xs font-medium rounded-full backdrop-blur-sm">Completed</span>}
@@ -75,8 +87,8 @@ const Projects = () => {
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{project.description}</p>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium text-foreground">${project.raised.toLocaleString()}</span>
-                        <span className="text-muted-foreground">of ${project.goal.toLocaleString()}</span>
+                        <span className="font-medium text-foreground">${raised.toLocaleString()}</span>
+                        <span className="text-muted-foreground">of ${goal.toLocaleString()}</span>
                       </div>
                       <Progress value={percentage} className="h-2" />
                       <div className="flex justify-between items-center">

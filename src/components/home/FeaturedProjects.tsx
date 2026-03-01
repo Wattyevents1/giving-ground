@@ -1,43 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-const projects = [
-  {
-    id: 1,
-    title: "Clean Water for Rural Communities",
-    description: "Providing clean, safe drinking water to 5,000 families in rural Kenya through sustainable well construction.",
-    image: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&h=400&fit=crop",
-    location: "Turkana, Kenya",
-    goal: 50000,
-    raised: 38500,
-    category: "Water & Sanitation",
-  },
-  {
-    id: 2,
-    title: "Education for Every Child",
-    description: "Building schools and providing educational materials to underprivileged children in South Asia.",
-    image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop",
-    location: "Bihar, India",
-    goal: 75000,
-    raised: 52000,
-    category: "Education",
-  },
-  {
-    id: 3,
-    title: "Food Security Program",
-    description: "Establishing community gardens and food distribution networks to combat hunger in urban areas.",
-    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop",
-    location: "Lagos, Nigeria",
-    goal: 30000,
-    raised: 21000,
-    category: "Food & Nutrition",
-  },
-];
+type Project = Tables<"projects">;
 
 const FeaturedProjects = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      setProjects(data || []);
+    };
+    fetchProjects();
+  }, []);
+
   return (
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
@@ -59,12 +46,14 @@ const FeaturedProjects = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {projects.map((project) => {
-            const percentage = Math.round((project.raised / project.goal) * 100);
+            const goal = project.funding_goal || 1;
+            const raised = project.amount_raised || 0;
+            const percentage = Math.min(Math.round((raised / goal) * 100), 100);
             return (
               <Card key={project.id} className="overflow-hidden group hover:shadow-elevated transition-all duration-300 border-border/50">
                 <div className="relative overflow-hidden aspect-[3/2]">
                   <img
-                    src={project.image}
+                    src={project.image_url || "/placeholder.svg"}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
@@ -88,8 +77,8 @@ const FeaturedProjects = () => {
                   </p>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="font-medium text-foreground">${project.raised.toLocaleString()}</span>
-                      <span className="text-muted-foreground">of ${project.goal.toLocaleString()}</span>
+                      <span className="font-medium text-foreground">${raised.toLocaleString()}</span>
+                      <span className="text-muted-foreground">of ${goal.toLocaleString()}</span>
                     </div>
                     <Progress value={percentage} className="h-2" />
                     <div className="flex justify-between items-center">
