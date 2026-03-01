@@ -2,10 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import { Heart, Users, Globe, Briefcase } from "lucide-react";
 
 const stats = [
-  { icon: Heart, label: "Funds Raised", value: 2500000, prefix: "$", suffix: "+", format: true },
-  { icon: Users, label: "Lives Impacted", value: 50000, prefix: "", suffix: "+", format: true },
-  { icon: Globe, label: "Projects Completed", value: 120, prefix: "", suffix: "", format: false },
-  { icon: Briefcase, label: "Active Volunteers", value: 3000, prefix: "", suffix: "+", format: true },
+  { icon: Heart, label: "Funds Raised", value: 40000, prefix: "$", suffix: "+", format: true },
+  { icon: Users, label: "Lives Impacted", value: 1000, prefix: "", suffix: "+", format: true },
+  { icon: Globe, label: "Projects Completed", value: 90, prefix: "", suffix: "", format: false },
+  { icon: Briefcase, label: "Active Volunteers", value: 20, prefix: "", suffix: "+", format: false },
 ];
 
 function formatNumber(num: number, shouldFormat: boolean): string {
