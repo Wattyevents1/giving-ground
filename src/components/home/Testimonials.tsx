@@ -4,9 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 const testimonials = [
   {
     id: 1,
-    quote: "Thanks to Hope Foundation, my children now have access to clean water and a school just a walk away. Our lives have truly changed.",
+    quote: "Thanks to Al-Imran Muslim Aid, my children now have access to clean water and a school just a walk away. Our lives have truly changed.",
     name: "Amina Wanjiku",
-    role: "Beneficiary, Kenya",
+    role: "Beneficiary, Uganda",
     avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop&crop=face",
   },
   {
