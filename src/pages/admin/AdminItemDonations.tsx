@@ -47,6 +47,7 @@ const AdminItemDonations = () => {
               <TableRow>
                 <TableHead>Donor</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Location</TableHead>
@@ -59,6 +60,7 @@ const AdminItemDonations = () => {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.donor_name}</TableCell>
                   <TableCell>{item.donor_email}</TableCell>
+                  <TableCell>{item.donor_phone || "—"}</TableCell>
                   <TableCell>{item.category || "—"}</TableCell>
                   <TableCell className="max-w-xs truncate">{item.item_description}</TableCell>
                   <TableCell>{item.pickup_location || "—"}</TableCell>
@@ -76,7 +78,7 @@ const AdminItemDonations = () => {
                   <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))}
-              {items.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No item donations yet</TableCell></TableRow>}
+              {items.length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No item donations yet</TableCell></TableRow>}
             </TableBody>
           </Table>
         </CardContent>
