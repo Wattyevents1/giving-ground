@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
 import DonateFunds from "./pages/DonateFunds";
+import DonationCallback from "./pages/DonationCallback";
 import DonateItems from "./pages/DonateItems";
 import Membership from "./pages/Membership";
 import Volunteer from "./pages/Volunteer";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/donate" element={<DonateFunds />} />
+            <Route path="/donation/callback" element={<DonationCallback />} />
             <Route path="/donate-items" element={<DonateItems />} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/volunteer" element={<Volunteer />} />

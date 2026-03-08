@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Heart, CreditCard, Smartphone, Globe, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ const PAYPAL_CLIENT_ID = "Aa5hhWpyD7epL8hLGgBdrXDXAdz23pieiKj6lVRzQNzbw7sqzAcWA0
 const presetAmounts = [10, 25, 50, 100, 250, 500];
 
 const DonateFunds = () => {
+  const navigate = useNavigate();
   const [amount, setAmount] = useState<number | "">("");
   const [donationType, setDonationType] = useState<"one-time" | "monthly">("one-time");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
@@ -42,7 +44,7 @@ const DonateFunds = () => {
           donor_phone: donorPhone,
           description: `${donationType === "monthly" ? "Monthly" : "One-time"} Donation`,
           is_recurring: donationType === "monthly",
-          callback_url: window.location.origin + "/?donation=success",
+          callback_url: window.location.origin,
         },
       });
       if (error) throw error;
@@ -169,20 +171,15 @@ const DonateFunds = () => {
                                 if (order) {
                                   const txId = order.purchase_units?.[0]?.payments?.captures?.[0]?.id || order.id;
                                   await recordPayPalDonation(txId || "paypal");
-                                  toast.success("Thank you for your generous donation! 🤲");
-                                  setAmount("");
-                                  setSelectedPreset(null);
-                                  setDonorName("");
-                                  setDonorEmail("");
-                                  setDonorPhone("");
+                                  navigate(`/donation/callback?gateway=paypal&status=success&transaction_id=${encodeURIComponent(txId || "")}`);
                                 }
                               }}
                               onError={(err) => {
                                 console.error("PayPal error:", err);
-                                toast.error("PayPal payment failed. Please try again.");
+                                navigate("/donation/callback?gateway=paypal&status=failed");
                               }}
                               onCancel={() => {
-                                toast.info("Payment cancelled.");
+                                navigate("/donation/callback?gateway=paypal&status=cancelled");
                               }}
                             />
                             <p className="text-xs text-muted-foreground text-center mt-3">🔒 Secured by PayPal</p>
