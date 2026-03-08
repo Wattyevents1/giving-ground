@@ -87,7 +87,7 @@ const Membership = () => {
                   <CardDescription>{tier.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <div className="mb-6"><span className="font-serif text-4xl font-bold text-foreground">â‚¬{tier.price}</span><span className="text-muted-foreground text-sm">/month</span></div>
+                  <div className="mb-6"><span className="font-serif text-4xl font-bold text-foreground">â‚¬‚¬{tier.price}</span><span className="text-muted-foreground text-sm">/month</span></div>
                   <ul className="space-y-3 text-left">
                     {tier.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span className="text-muted-foreground">{feature}</span></li>
@@ -117,7 +117,7 @@ const Membership = () => {
             <div><Label htmlFor="member-phone">Phone (for mobile money)</Label><Input id="member-phone" type="tel" placeholder="+256700000000" className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
             <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold" disabled={!email || loading} onClick={handleJoin}>
               {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Heart className="w-4 h-4 mr-2 fill-current" />}
-              {loading ? "Processing..." : `Pay $${selectedTier?.price}/month via Pesapal`}
+              {loading ? "Processing..." : `Paâ‚¬ $${selectedTier?.price}/month via Pesapal`}
             </Button>
             <p className="text-xs text-muted-foreground text-center">Secure payment via Pesapal (Card or Mobile Money)</p>
           </div>
