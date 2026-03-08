@@ -68,10 +68,30 @@ async function registerIPN(token: string, ipnUrl: string): Promise<string> {
   return data.ipn_id;
 }
 
+async function getTransactionStatus(token: string, orderTrackingId: string) {
+  const statusRes = await fetchWithTimeout(
+    `${PESAPAL_TX_STATUS_URL}?orderTrackingId=${encodeURIComponent(orderTrackingId)}`,
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return await statusRes.json();
+}
+
+function getSupabaseClient() {
+  // Dynamic import not needed - use fetch-based approach
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  return { supabaseUrl, supabaseKey };
+}
+
 // Simple in-memory rate limiter (per-instance, resets on cold start)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10; // max requests per window
-const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
 
 function isRateLimited(key: string): boolean {
   const now = Date.now();
@@ -84,7 +104,6 @@ function isRateLimited(key: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
-// Validation helpers
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 255;
 }
@@ -97,6 +116,21 @@ function sanitizeString(str: string, maxLen: number): string {
   return str.replace(/[<>"'`;]/g, "").trim().slice(0, maxLen);
 }
 
+async function updateDonationStatus(merchantRef: string, status: string, transactionId?: string) {
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const updateData: Record<string, string> = { status };
+  if (transactionId) updateData.transaction_id = transactionId;
+
+  await supabase
+    .from("donations")
+    .update(updateData)
+    .eq("transaction_id", merchantRef);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -106,36 +140,30 @@ serve(async (req) => {
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
 
-    // IPN callback handler
+    // ── IPN callback handler (GET from Pesapal) ──
     if (action === "ipn") {
       const orderTrackingId = url.searchParams.get("OrderTrackingId");
       const orderMerchantReference = url.searchParams.get("OrderMerchantReference");
       console.log("IPN received:", { orderTrackingId, orderMerchantReference });
 
-      if (orderTrackingId) {
-        const token = await getAccessToken();
-        const statusRes = await fetchWithTimeout(
-          `${PESAPAL_TX_STATUS_URL}?orderTrackingId=${encodeURIComponent(orderTrackingId)}`,
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+      if (orderTrackingId && orderMerchantReference) {
+        try {
+          const token = await getAccessToken();
+          const statusData = await getTransactionStatus(token, orderTrackingId);
+          console.log("Transaction status from IPN:", statusData);
+
+          const pesapalStatus = (statusData.payment_status_description || "").toLowerCase();
+
+          if (pesapalStatus === "completed") {
+            await updateDonationStatus(orderMerchantReference, "completed");
+          } else if (pesapalStatus === "failed" || pesapalStatus === "invalid") {
+            await updateDonationStatus(orderMerchantReference, "failed");
+          } else if (pesapalStatus === "reversed") {
+            await updateDonationStatus(orderMerchantReference, "refunded");
           }
-        );
-        const statusData = await statusRes.json();
-        console.log("Transaction status:", statusData);
-
-        if (statusData.payment_status_description === "Completed") {
-          const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-          const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-          const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-          const supabase = createClient(supabaseUrl, supabaseKey);
-
-          await supabase
-            .from("donations")
-            .update({ status: "completed" })
-            .eq("transaction_id", orderMerchantReference);
+          // "pending" status - leave as is
+        } catch (err) {
+          console.error("IPN processing error:", err);
         }
       }
 
@@ -144,12 +172,52 @@ serve(async (req) => {
       });
     }
 
-    // Submit order
+    // ── POST actions ──
     if (req.method === "POST") {
       const body = await req.json();
+
+      // ── Check transaction status (called from frontend callback page) ──
+      if (body.action === "check-status") {
+        const { order_tracking_id, merchant_reference } = body;
+        
+        if (!order_tracking_id) {
+          return new Response(
+            JSON.stringify({ error: "order_tracking_id required" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const token = await getAccessToken();
+        const statusData = await getTransactionStatus(token, order_tracking_id);
+        console.log("Status check result:", statusData);
+
+        const pesapalStatus = (statusData.payment_status_description || "").toLowerCase();
+        let mappedStatus = "pending";
+
+        if (pesapalStatus === "completed") {
+          mappedStatus = "completed";
+          if (merchant_reference) {
+            await updateDonationStatus(merchant_reference, "completed");
+          }
+        } else if (pesapalStatus === "failed" || pesapalStatus === "invalid") {
+          mappedStatus = "failed";
+          if (merchant_reference) {
+            await updateDonationStatus(merchant_reference, "failed");
+          }
+        }
+
+        return new Response(
+          JSON.stringify({
+            status: mappedStatus,
+            transaction_id: statusData.payment_account || merchant_reference,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // ── Submit order ──
       const { amount, donor_name, donor_email, donor_phone, description, merchant_reference, callback_url, is_recurring, project_id } = body;
 
-      // ── Input validation ──
       if (!donor_email || typeof donor_email !== "string" || !isValidEmail(donor_email)) {
         return new Response(
           JSON.stringify({ error: "A valid email address is required" }),
@@ -172,7 +240,6 @@ serve(async (req) => {
         );
       }
 
-      // ── Rate limiting by email ──
       if (isRateLimited(donor_email)) {
         return new Response(
           JSON.stringify({ error: "Too many requests. Please try again later." }),
@@ -180,7 +247,6 @@ serve(async (req) => {
         );
       }
 
-      // Sanitize string inputs
       const safeDonorName = donor_name ? sanitizeString(String(donor_name), 255) : null;
       const safeDonorPhone = donor_phone ? sanitizeString(String(donor_phone), 20) : "";
       const safeDescription = description ? sanitizeString(String(description), 500) : "Donation";
@@ -191,12 +257,18 @@ serve(async (req) => {
       const ipnCallbackUrl = `${supabaseUrl}/functions/v1/pesapal-payment?action=ipn`;
       const ipnId = await registerIPN(token, ipnCallbackUrl);
 
+      const orderId = merchant_reference || crypto.randomUUID();
+
+      // Build the callback URL that Pesapal redirects the user to after payment
+      const originUrl = callback_url || new URL(req.headers.get("origin") || req.url).origin;
+      const pesapalCallbackUrl = `${originUrl}/donation/callback?gateway=pesapal&OrderMerchantReference=${encodeURIComponent(orderId)}`;
+
       const orderPayload = {
-        id: merchant_reference || crypto.randomUUID(),
+        id: orderId,
         currency: "USD",
         amount: numericAmount,
         description: safeDescription,
-        callback_url: callback_url || `${new URL(req.headers.get("origin") || req.url).origin}/`,
+        callback_url: pesapalCallbackUrl,
         notification_id: ipnId,
         billing_address: {
           email_address: donor_email.trim(),
@@ -233,7 +305,7 @@ serve(async (req) => {
         payment_method: "pesapal",
         is_recurring: is_recurring === true,
         status: "pending",
-        transaction_id: orderPayload.id,
+        transaction_id: orderId,
         project_id: project_id || null,
       });
 
@@ -241,7 +313,7 @@ serve(async (req) => {
         JSON.stringify({
           redirect_url: orderData.redirect_url,
           order_tracking_id: orderData.order_tracking_id,
-          merchant_reference: orderPayload.id,
+          merchant_reference: orderId,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
