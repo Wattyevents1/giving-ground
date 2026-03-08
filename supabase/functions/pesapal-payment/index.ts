@@ -116,6 +116,23 @@ function sanitizeString(str: string, maxLen: number): string {
   return str.replace(/[<>"'`;]/g, "").trim().slice(0, maxLen);
 }
 
+async function sendNotification(type: string, data: Record<string, unknown>) {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    await fetch(`${supabaseUrl}/functions/v1/send-notification`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ type, data }),
+    });
+  } catch (e) {
+    console.error("Failed to send notification:", e);
+  }
+}
+
 async function updateDonationStatus(merchantRef: string, status: string, transactionId?: string) {
   const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -125,10 +142,14 @@ async function updateDonationStatus(merchantRef: string, status: string, transac
   const updateData: Record<string, string> = { status };
   if (transactionId) updateData.transaction_id = transactionId;
 
-  await supabase
+  const { data } = await supabase
     .from("donations")
     .update(updateData)
-    .eq("transaction_id", merchantRef);
+    .eq("transaction_id", merchantRef)
+    .select()
+    .single();
+
+  return data;
 }
 
 serve(async (req) => {
