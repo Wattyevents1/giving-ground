@@ -28,6 +28,7 @@ const UrgentAppealsPage = () => {
         .eq("category", "Emergency Relief")
         .order("created_at", { ascending: false });
       setAppeals(data || []);
+      setLoading(false);
     };
     fetch();
   }, []);
