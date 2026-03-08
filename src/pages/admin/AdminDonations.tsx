@@ -21,7 +21,7 @@ const AdminDonations = () => {
     <AdminLayout>
       <div className="mb-6">
         <h1 className="font-serif text-3xl font-bold">Donations</h1>
-        <p className="text-muted-foreground mt-1">Total: €{totalAmount.toLocaleString()} from {donations.length} donations</p>
+        <p className="text-muted-foreground mt-1">Total: €��{totalAmount.toLocaleString()} from {donations.length} donations</p>
       </div>
       <Card className="border-border/50">
         <CardContent className="p-0">
@@ -41,7 +41,7 @@ const AdminDonations = () => {
                 <TableRow key={d.id}>
                   <TableCell className="font-medium">{d.donor_name || "Anonymous"}</TableCell>
                   <TableCell>{d.donor_email || "—"}</TableCell>
-                  <TableCell className="font-semibold">${d.amount.toLocaleString()}</TableCell>
+                  <TableCell className="font-semibold€>${d.amount.toLocaleString()}</TableCell>
                   <TableCell>{d.payment_method || "—"}</TableCell>
                   <TableCell><Badge variant={d.is_recurring ? "default" : "secondary"}>{d.is_recurring ? "Yes" : "No"}</Badge></TableCell>
                   <TableCell>{new Date(d.created_at).toLocaleDateString()}</TableCell>
