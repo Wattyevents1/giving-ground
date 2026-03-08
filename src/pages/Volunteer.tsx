@@ -203,7 +203,7 @@ const Volunteer = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("public-forms", {
-        body: { action: "submit_volunteer", data: { name, email, phone: phone ? `${countryCode} ${phone}` : "", area_of_interest: areaOfInterest, skills, availability } },
+        body: { action: "submit_volunteer", data: { name, email, phone: phone ? `${countryCode.split(" ")[1] || countryCode} ${phone}` : "", area_of_interest: areaOfInterest, skills, availability } },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
