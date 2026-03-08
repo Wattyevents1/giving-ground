@@ -15,6 +15,7 @@ type Project = Tables<"projects">;
 
 const UrgentAppealsPage = () => {
   const [appeals, setAppeals] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const donationTotals = useProjectDonations();
   const { formatAmount } = useCurrency();
 
