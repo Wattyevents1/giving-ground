@@ -29,6 +29,7 @@ const Projects = () => {
         .in("status", ["published", "completed"])
         .order("created_at", { ascending: false });
       setProjects(data || []);
+      setLoading(false);
     };
     fetchProjects();
   }, []);
