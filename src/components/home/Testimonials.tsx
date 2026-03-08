@@ -19,9 +19,9 @@ const testimonials = [
   {
     id: 3,
     quote: "I give my Zakat through Al-Imran Muslim Aid every Ramadan. Their transparency and updates on how funds are used give me full trust. Jazakallahu Khairan.",
-    name: "Halimah Nakato",
-    role: "Monthly Donor, Kampala",
-    avatar: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=100&h=100&fit=crop&crop=face",
+    name: "Sadeta Arifi",
+    role: "Monthly Donor, Germany",
+    avatar: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=100&h=100&fit=crop&crop=face",
   },
 ];
 const Testimonials = () => {
