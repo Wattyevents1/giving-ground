@@ -30,6 +30,7 @@ const AdminDashboard = () => {
         contacts: apiStats.contacts || 0,
         blogPosts: apiStats.blogPosts || 0,
         itemDonations: apiStats.itemDonations || 0,
+        memberships: apiStats.memberships || 0,
       });
       setLoading(false);
     };
