@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logo from "@/assets/logo.jpg";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { MapPin, Search } from "lucide-react";
