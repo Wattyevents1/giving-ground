@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import { Search, Calendar, User, ArrowRight, Loader2 } from "lucide-react";
+import { Search, Calendar, User, ArrowRight } from "lucide-react";
+import LogoSpinner from "@/components/ui/LogoSpinner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
