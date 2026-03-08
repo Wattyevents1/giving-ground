@@ -8,6 +8,7 @@ import LogoSpinner from "@/components/ui/LogoSpinner";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ donations: 0, totalAmount: 0, projects: 0, volunteers: 0, contacts: 0, blogPosts: 0, itemDonations: 0 });
+  const [loading, setLoading] = useState(true);
   const { formatAmount } = useCurrency();
 
   useEffect(() => {
