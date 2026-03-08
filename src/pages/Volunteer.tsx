@@ -100,7 +100,19 @@ const Volunteer = () => {
                     <div><Label htmlFor="vol-email">Email</Label><Input id="vol-email" type="email" placeholder="you@example.com" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><Label htmlFor="vol-phone">Phone</Label><Input id="vol-phone" type="tel" placeholder="+254..." className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+                    <div><Label htmlFor="vol-phone">Phone</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Select value={countryCode} onValueChange={setCountryCode}>
+                          <SelectTrigger className="w-[140px] shrink-0"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {countryCodes.map((c) => (
+                              <SelectItem key={c.code} value={c.code}>{c.country} ({c.code})</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input id="vol-phone" type="tel" placeholder="701 703 951" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      </div>
+                    </div>
                     <div>
                       <Label>Area of Interest</Label>
                       <Select value={areaOfInterest} onValueChange={setAreaOfInterest}><SelectTrigger className="mt-1"><SelectValue placeholder="Select area" /></SelectTrigger>
