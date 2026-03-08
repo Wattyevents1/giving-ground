@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useCurrency } from "@/hooks/useCurrency";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Project = Tables<"projects">;
@@ -23,6 +24,7 @@ const AdminProjects = () => {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const { formatAmount } = useCurrency();
 
   const fetchProjects = async () => {
     const { data } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
@@ -114,8 +116,8 @@ const AdminProjects = () => {
                   <TableCell className="font-medium">{p.title}</TableCell>
                   <TableCell>{p.category}</TableCell>
                   <TableCell><Badge variant={p.status === "published" ? "default" : "secondary"}>{p.status}</Badge></TableCell>
-                  <TableCell>€{(p.funding_goal || 0).toLocaleString()}</TableCell>
-                  <TableCell>€{(p.amount_raised || 0).toLocaleString()}</TableCell>
+                  <TableCell>{formatAmount(p.funding_goal || 0)}</TableCell>
+                  <TableCell>{formatAmount(p.amount_raised || 0)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button size="icon" variant="ghost" onClick={() => handleEdit(p)}><Pencil className="w-4 h-4" /></Button>

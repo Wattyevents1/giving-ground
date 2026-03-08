@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CurrencySelector from "@/components/layout/CurrencySelector";
 import logo from "@/assets/logo.jpg";
 
 const navLinks = [
@@ -44,6 +45,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
+          <CurrencySelector />
           <Link to="/donate">
             <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6">
               <Heart className="w-4 h-4 mr-1" />
@@ -78,12 +80,15 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link to="/donate" onClick={() => setIsOpen(false)} className="mt-2">
-              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
-                <Heart className="w-4 h-4 mr-1" />
-                Donate Now
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3 mt-2">
+              <CurrencySelector />
+              <Link to="/donate" onClick={() => setIsOpen(false)} className="flex-1">
+                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+                  <Heart className="w-4 h-4 mr-1" />
+                  Donate Now
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       )}
