@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { MapPin, Heart, Users, Calendar, ArrowLeft, Share2 } from "lucide-react";
+import { MapPin, Heart, Users, Calendar, ArrowLeft } from "lucide-react";
+import SocialShareButtons from "@/components/ui/SocialShareButtons";
 import LogoSpinner from "@/components/ui/LogoSpinner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -111,7 +112,10 @@ const ProjectDetails = () => {
                     <div className="flex justify-between text-xs text-muted-foreground"><span>{percentage}% funded</span><span>{donorsCount} donors</span></div>
                   </div>
                   <Link to="/donate"><Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-5 mb-3"><Heart className="w-4 h-4 mr-2 fill-current" />Donate Now</Button></Link>
-                  <Button variant="outline" className="w-full gap-2"><Share2 className="w-4 h-4" />Share This Project</Button>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground text-center">Share this project</p>
+                    <SocialShareButtons url={window.location.href} title={project.title} className="justify-center" />
+                  </div>
                 </CardContent>
               </Card>
             </div>
