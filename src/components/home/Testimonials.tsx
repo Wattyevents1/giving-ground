@@ -14,7 +14,7 @@ const testimonials = [
     quote: "I joined the Qurbani distribution in Mbale last Eid al-Adha. Seeing orphaned children receive fresh meat and smiling — SubhanAllah, it changed my heart.",
     name: "Ibrahim Kateregga",
     role: "Volunteer, Mbale",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
   },
   {
     id: 3,
