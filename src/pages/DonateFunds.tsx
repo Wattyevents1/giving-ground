@@ -16,6 +16,7 @@ const PAYPAL_CLIENT_ID = "Aa5hhWpyD7epL8hLGgBdrXDXAdz23pieiKj6lVRzQNzbw7sqzAcWA0
 const presetAmounts = [10, 25, 50, 100, 250, 500];
 
 const DonateFunds = () => {
+  const navigate = useNavigate();
   const [amount, setAmount] = useState<number | "">("");
   const [donationType, setDonationType] = useState<"one-time" | "monthly">("one-time");
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
