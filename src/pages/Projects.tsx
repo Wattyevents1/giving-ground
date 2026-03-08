@@ -15,6 +15,7 @@ type Project = Tables<"projects">;
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const donationTotals = useProjectDonations();
@@ -28,6 +29,7 @@ const Projects = () => {
         .in("status", ["published", "completed"])
         .order("created_at", { ascending: false });
       setProjects(data || []);
+      setLoading(false);
     };
     fetchProjects();
   }, []);
@@ -108,7 +110,8 @@ const Projects = () => {
               );
             })}
           </div>
-          {filtered.length === 0 && <div className="text-center py-16 text-muted-foreground"><p className="text-lg">No projects found matching your search.</p></div>}
+          {loading && <div className="text-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div><p className="text-muted-foreground mt-4">Loading projects...</p></div>}
+          {!loading && filtered.length === 0 && <div className="text-center py-16 text-muted-foreground"><p className="text-lg">No projects found matching your search.</p></div>}
         </div>
       </section>
     </Layout>
