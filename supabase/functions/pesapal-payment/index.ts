@@ -116,6 +116,23 @@ function sanitizeString(str: string, maxLen: number): string {
   return str.replace(/[<>"'`;]/g, "").trim().slice(0, maxLen);
 }
 
+async function sendNotification(type: string, data: Record<string, unknown>) {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    await fetch(`${supabaseUrl}/functions/v1/send-notification`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+      body: JSON.stringify({ type, data }),
+    });
+  } catch (e) {
+    console.error("Failed to send notification:", e);
+  }
+}
+
 async function updateDonationStatus(merchantRef: string, status: string, transactionId?: string) {
   const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -125,10 +142,14 @@ async function updateDonationStatus(merchantRef: string, status: string, transac
   const updateData: Record<string, string> = { status };
   if (transactionId) updateData.transaction_id = transactionId;
 
-  await supabase
+  const { data } = await supabase
     .from("donations")
     .update(updateData)
-    .eq("transaction_id", merchantRef);
+    .eq("transaction_id", merchantRef)
+    .select()
+    .single();
+
+  return data;
 }
 
 serve(async (req) => {
@@ -155,7 +176,16 @@ serve(async (req) => {
           const pesapalStatus = (statusData.payment_status_description || "").toLowerCase();
 
           if (pesapalStatus === "completed") {
-            await updateDonationStatus(orderMerchantReference, "completed");
+            const donation = await updateDonationStatus(orderMerchantReference, "completed");
+            if (donation) {
+              sendNotification("donation", {
+                amount: donation.amount,
+                donor_name: donation.donor_name,
+                donor_email: donation.donor_email,
+                payment_method: "pesapal",
+                is_recurring: donation.is_recurring,
+              });
+            }
           } else if (pesapalStatus === "failed" || pesapalStatus === "invalid") {
             await updateDonationStatus(orderMerchantReference, "failed");
           } else if (pesapalStatus === "reversed") {
