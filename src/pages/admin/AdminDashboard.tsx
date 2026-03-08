@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, FolderKanban, Mail, FileText, Package } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
+import LogoSpinner from "@/components/ui/LogoSpinner";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ donations: 0, totalAmount: 0, projects: 0, volunteers: 0, contacts: 0, blogPosts: 0, itemDonations: 0 });
