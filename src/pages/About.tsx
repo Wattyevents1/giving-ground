@@ -48,7 +48,7 @@ const About = () => {
 
       <section className="py-16 md:py-24 bg-secondary/50">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid md:grid-cols-2 gap-10 items-stretch">
             <Card className="border-border/50">
               <CardContent className="p-8">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
