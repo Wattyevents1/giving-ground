@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, FolderKanban, Mail, FileText, Package } from "lucide-react";
+import { Heart, Users, FolderKanban, Mail, FileText, Package, Crown } from "lucide-react";
 import { useCurrency } from "@/hooks/useCurrency";
 import LogoSpinner from "@/components/ui/LogoSpinner";
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({ donations: 0, totalAmount: 0, projects: 0, volunteers: 0, contacts: 0, blogPosts: 0, itemDonations: 0 });
+  const [stats, setStats] = useState({ donations: 0, totalAmount: 0, projects: 0, volunteers: 0, contacts: 0, blogPosts: 0, itemDonations: 0, memberships: 0 });
   const [loading, setLoading] = useState(true);
   const { formatAmount } = useCurrency();
 
@@ -30,6 +30,7 @@ const AdminDashboard = () => {
         contacts: apiStats.contacts || 0,
         blogPosts: apiStats.blogPosts || 0,
         itemDonations: apiStats.itemDonations || 0,
+        memberships: apiStats.memberships || 0,
       });
       setLoading(false);
     };
@@ -43,6 +44,7 @@ const AdminDashboard = () => {
     { label: "Blog Posts", value: stats.blogPosts, sub: "Published & drafts", icon: FileText, color: "text-charity-gold" },
     { label: "Contact Messages", value: stats.contacts, sub: "Inbox", icon: Mail, color: "text-charity-orange" },
     { label: "Item Donations", value: stats.itemDonations, sub: "Submissions", icon: Package, color: "text-primary" },
+    { label: "Memberships", value: stats.memberships, sub: "Active members", icon: Crown, color: "text-charity-gold" },
   ];
 
   return (
