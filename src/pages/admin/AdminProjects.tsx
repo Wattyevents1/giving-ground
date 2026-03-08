@@ -73,7 +73,7 @@ const AdminProjects = () => {
                 <div><Label>Location</Label><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="mt-1" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><Label>Funding Goal ($)</Label><Input type="number" value={form.funding_goal} onChange={(e) => setForm({ ...form, funding_goal: Number(e.target.value) })} className="mt-1" /></div>
+                <div><Label>Funding Goal (€)</Label><Input type="number" value={form.funding_goal} onChange={(e) => setForm({ ...form, funding_goal: Number(e.target.value) })} className="mt-1" /></div>
                 <div><Label>Start Date</Label><Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className="mt-1" /></div>
               </div>
               <div><Label>Image URL</Label><Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="mt-1" /></div>
