@@ -35,9 +35,11 @@ const Navbar = () => {
               key={link.path}
               to={link.path}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === link.path
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                link.highlight
+                  ? "text-[hsl(25,95%,53%)] hover:bg-[hsl(25,95%,53%)]/10 font-bold"
+                  : location.pathname === link.path
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
               {link.label}
