@@ -60,6 +60,7 @@ const AdminItemDonations = () => {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.donor_name}</TableCell>
                   <TableCell>{item.donor_email}</TableCell>
+                  <TableCell>{item.donor_phone || "—"}</TableCell>
                   <TableCell>{item.category || "—"}</TableCell>
                   <TableCell className="max-w-xs truncate">{item.item_description}</TableCell>
                   <TableCell>{item.pickup_location || "—"}</TableCell>
