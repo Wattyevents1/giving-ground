@@ -7,21 +7,21 @@ const testimonials = [
     quote: "Alhamdulillah, Al-Imran Muslim Aid built a borehole in our village in Karamoja. My children no longer walk miles for water. May Allah reward every donor.",
     name: "Fatimah Nabirye",
     role: "Beneficiary, Karamoja",
-    avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop&crop=face",
+    avatar: "https://images.unsplash.com/photo-1618151313441-bc79b11e5090?w=100&h=100&fit=crop&crop=face",
   },
   {
     id: 2,
     quote: "I joined the Qurbani distribution in Mbale last Eid al-Adha. Seeing orphaned children receive fresh meat and smiling — SubhanAllah, it changed my heart.",
     name: "Ibrahim Kateregga",
     role: "Volunteer, Mbale",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
   },
   {
     id: 3,
     quote: "I give my Zakat through Al-Imran Muslim Aid every Ramadan. Their transparency and updates on how funds are used give me full trust. Jazakallahu Khairan.",
     name: "Halimah Nakato",
     role: "Monthly Donor, Kampala",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
+    avatar: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=100&h=100&fit=crop&crop=face",
   },
 ];
 const Testimonials = () => {
