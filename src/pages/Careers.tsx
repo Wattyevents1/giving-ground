@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import { Briefcase, MapPin, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { Briefcase, MapPin, Clock, ArrowRight } from "lucide-react";
+import LogoSpinner from "@/components/ui/LogoSpinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
