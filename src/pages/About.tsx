@@ -1,5 +1,8 @@
 import Layout from "@/components/layout/Layout";
 import { Target, Eye, MapPin, Users, Heart, Briefcase } from "lucide-react";
+import teamImran from "@/assets/team-imran.jpg";
+import teamTwaha from "@/assets/team-twaha.jpg";
+import teamMariam from "@/assets/team-mariam.jpg";
 import { Card, CardContent } from "@/components/ui/card";
 
 const About = () => {
@@ -124,13 +127,13 @@ const About = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
             {[
-              { name: "Watiti Imran", role: "Chairperson" },
-              { name: "Webisa Twaha", role: "Secretary" },
-              { name: "Khaukha Mariam", role: "Treasurer" },
+              { name: "Watiti Imran", role: "Chairperson", image: teamImran },
+              { name: "Webisa Twaha", role: "Secretary", image: teamTwaha },
+              { name: "Khaukha Mariam", role: "Treasurer", image: teamMariam },
             ].map((member) => (
               <div key={member.name} className="text-center group">
-                <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-border group-hover:ring-accent transition-colors">
-                  <Users className="w-10 h-10 text-primary/60" />
+                <div className="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden ring-4 ring-border group-hover:ring-accent transition-colors">
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                 </div>
                 <h3 className="font-semibold text-foreground text-lg">{member.name}</h3>
                 <p className="text-sm text-muted-foreground">{member.role}</p>
