@@ -4,27 +4,26 @@ import { Card, CardContent } from "@/components/ui/card";
 const testimonials = [
   {
     id: 1,
-    quote: "Thanks to Al-Imran Muslim Aid, my children now have access to clean water and a school just a walk away. Our lives have truly changed.",
-    name: "Amina Wanjiku",
-    role: "Beneficiary, Uganda",
+    quote: "Alhamdulillah, Al-Imran Muslim Aid built a borehole in our village in Karamoja. My children no longer walk miles for water. May Allah reward every donor.",
+    name: "Fatimah Nabirye",
+    role: "Beneficiary, Karamoja",
     avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop&crop=face",
   },
   {
     id: 2,
-    quote: "Volunteering here opened my eyes. The impact is real, the people are genuine, and every cent goes to making someone's life better.",
-    name: "David Ochieng",
-    role: "Volunteer",
+    quote: "I joined the Qurbani distribution in Mbale last Eid al-Adha. Seeing orphaned children receive fresh meat and smiling — SubhanAllah, it changed my heart.",
+    name: "Ibrahim Kateregga",
+    role: "Volunteer, Mbale",
     avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face",
   },
   {
     id: 3,
-    quote: "As a recurring donor, I've watched projects go from blueprints to reality. The transparency and communication are outstanding.",
-    name: "Sarah Mitchell",
-    role: "Monthly Donor",
+    quote: "I give my Zakat through Al-Imran Muslim Aid every Ramadan. Their transparency and updates on how funds are used give me full trust. Jazakallahu Khairan.",
+    name: "Halimah Nakato",
+    role: "Monthly Donor, Kampala",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
   },
 ];
-
 const Testimonials = () => {
   return (
     <section className="py-16 md:py-24">
