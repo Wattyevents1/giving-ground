@@ -1,5 +1,6 @@
 import { Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import namulwaImg from "@/assets/testimonial-namulwa.jpg";
 
 const testimonials = [
   {
