@@ -110,7 +110,8 @@ const Projects = () => {
               );
             })}
           </div>
-          {filtered.length === 0 && <div className="text-center py-16 text-muted-foreground"><p className="text-lg">No projects found matching your search.</p></div>}
+          {loading && <div className="text-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div><p className="text-muted-foreground mt-4">Loading projects...</p></div>}
+          {!loading && filtered.length === 0 && <div className="text-center py-16 text-muted-foreground"><p className="text-lg">No projects found matching your search.</p></div>}
         </div>
       </section>
     </Layout>
