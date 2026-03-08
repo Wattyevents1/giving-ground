@@ -23,6 +23,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const { newCount, clearCount } = useVolunteerNotifications();
 
   const handleLogout = async () => {
     await signOut();
