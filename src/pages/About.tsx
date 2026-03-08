@@ -133,7 +133,7 @@ const About = () => {
             ].map((member) => (
               <div key={member.name} className="text-center group">
                 <div className="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden ring-4 ring-border group-hover:ring-accent transition-colors">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" style={member.name === "Ndelema Mariam" ? { objectPosition: "center top", transform: "scale(1.5)", transformOrigin: "center 30%" } : {}} />
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                 </div>
                 <h3 className="font-semibold text-foreground text-lg">{member.name}</h3>
                 <p className="text-sm text-muted-foreground">{member.role}</p>
